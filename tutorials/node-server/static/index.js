@@ -10,6 +10,12 @@ document.querySelector("#input-send").addEventListener("click", (e) => {
     sendRequest()
 })
 
+document.querySelector("#input-chat").addEventListener("keydown", (e) => {
+    if(e.keyCode === 13) { 
+        sendRequest()
+    }
+})
+
 document.querySelector("#btn-fold-out").addEventListener("click", (e) => {
     const sidebar = document.querySelector(".sidebar");
     sidebar.style.width = "260px"
@@ -17,6 +23,8 @@ document.querySelector("#btn-fold-out").addEventListener("click", (e) => {
     e.target.style.display = "none"
 })
 
+
+let uri = "/chain/tagging_pure/stream_log"
 function sendRequest(){
     const text = document.querySelector("#input-chat").value
     const data = {
@@ -38,7 +46,7 @@ function sendRequest(){
     llmMsg.appendChild(llmMsg_P);
     resLog.appendChild(llmMsg);
 
-    fetch("http://127.0.0.1:8000/chain/tagging/stream_log",{
+    fetch(`http://127.0.0.1:8000${uri}`,{
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -106,3 +114,10 @@ function sendRequest(){
         console.error('Fetch error:', error);
     });    
 }
+
+const selectLLM = document.getElementById('selectLLM');
+selectLLM.addEventListener('change', function() {
+    const selectedOption = this.options[this.selectedIndex];
+    console.log('Selected option:', selectedOption.value);
+    uri = `/chain/${selectedOption.value}/stream_log`
+});

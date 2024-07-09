@@ -7,8 +7,9 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_community.chat_models import ChatZhipuAI
 from langserve import add_routes
 from dotenv import load_dotenv,find_dotenv
-import os
-from tagging import tagging_chain
+from chain_wrapper import tagging,tagging_pure
+from router_api import router
+
 
 # 1. Create prompt template
 system_template = "Translate the following into {language}:"
@@ -45,7 +46,13 @@ add_routes(
 
 add_routes(
     app,
-    tagging_chain,
+    tagging_pure.tagging_chain,
+    path="/chain/tagging_pure",
+)
+
+add_routes(
+    app,
+    tagging.tagging_chain,
     path="/chain/tagging",
 )
 
@@ -72,6 +79,9 @@ def baike(action,list,srsearch,format):
             {"snippet":"xxxxxxx"}
         ]
     }}
+
+#11 加载自定义路由
+app.include_router(router)
 
 if __name__ == "__main__":
     import uvicorn
