@@ -21,8 +21,7 @@ function sendRequest(){
     const text = document.querySelector("#input-chat").value
     const data = {
         input: {
-            language: "中文",
-            text
+            input: text,
         },
         config: {}
     }; 
@@ -39,7 +38,7 @@ function sendRequest(){
     llmMsg.appendChild(llmMsg_P);
     resLog.appendChild(llmMsg);
 
-    fetch("http://127.0.0.1:8000/chain/stream_log",{
+    fetch("http://127.0.0.1:8000/chain/tagging/stream_log",{
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -76,11 +75,19 @@ function sendRequest(){
                             const str = eventString.substring("data: ".length);
                             const data = JSON.parse(str)
                             // console.log(3000,data);
-                            data.ops.forEach(item => {
-                                if(item.op === "add" && item.path === "/logs/ChatZhipuAI/streamed_output_str/-"){
+                            for(const item of data.ops){
+                                if(item.op === "add" && item.path === "/logs/ChatOpenAI/streamed_output_str/-"){
+                                    // console.log(item.value)
                                     res.innerHTML += item.value;  
                                 }
-                            })
+                                if(item.op === "add" && item.path === "/logs/PydanticToolsParser/final_output"){
+                                    if(String(item.value.output) !== "null" && String(item.value.output) !== "undefined"){
+                                        // console.log(JSON.stringify(item.value.output, null, 2))
+                                        res.innerHTML = `<pre>${JSON.stringify(item.value.output, null, 2)}</pre>`;
+                                        break;
+                                    }
+                                }
+                            }
                         }
                     });
                     

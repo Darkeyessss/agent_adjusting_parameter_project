@@ -8,6 +8,7 @@ from langchain_community.chat_models import ChatZhipuAI
 from langserve import add_routes
 from dotenv import load_dotenv,find_dotenv
 import os
+from tagging import tagging_chain
 
 # 1. Create prompt template
 system_template = "Translate the following into {language}:"
@@ -42,6 +43,12 @@ add_routes(
     path="/chain",
 )
 
+add_routes(
+    app,
+    tagging_chain,
+    path="/chain/tagging",
+)
+
 # 8. Publishing static resources
 app.mount("/pages",StaticFiles(directory="static"),name="pages")
 
@@ -52,7 +59,7 @@ from fastapi.middleware.cors import CORSMiddleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    # allow_methods=["*"],
+    allow_methods=["*"],
     # allow_headers=["*"],
 )
 

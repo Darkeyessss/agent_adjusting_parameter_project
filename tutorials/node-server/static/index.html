@@ -1,87 +1,78 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <meta content="width=device-width,initial-scale=1.0" name="viewport">
         <meta charset="utf-8">
-        <title>LangServe Demo</title>
+        <title>Web UI</title>
+        <link rel="stylesheet" href="./assets/font/iconfont.css">
+        <link rel="stylesheet" href="./assets/css/index.css">
     </head>
     <body>
-        <h1>LangServe Demo</h1>
-        <div>
-            <span>LANGUAGE</span>
-            <input id="lang" value="chinese"/>
-        </div>
-        <div>
-            <span>TEXT</span>
-            <input id="text" value="hi"/>
-        </div>
-        <div id="res">
-
-        </div>
-        <div>
-            <button onclick="sendRequest()">Send</button>
-        </div>
+        <div class="container">
+            <div class="sidebar">
+                <div class="sidebar-nav">
+                    <span id="btn-fold-in" class="iconfont icon-zhedie1 fold"></span>
+                    <div class="history">
+                        <div class="today"></div>
+                        <div class="yesterday"></div>
+                        <div class="last-7days"></div>
+                        <div class="last-30days"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="content">
+                <div class="content-log">
+                    <div class="content-nav">
+                        <span id="btn-fold-out" class="iconfont icon-zhedie2 fold"></span>
+                    </div>
+                    <div id="res-log">
+                        <h1>分析句子表达的情感</h1>
+                    </div>
+                </div>
+                <div class="content-footer">
+                    <div class="input-chat-wrapper">
+                        <span id="input-attachment" class="iconfont icon-fujian"></span>
+                        <input id="input-chat" placeholder="请“大模型”发送消息">
+                        <span id="input-send" class="iconfont icon-shangchuan"></span>
+                    </div>
+                </div>
+            </div>
         </div>
     </body>
 </html>
+<script src="./index.js"></script>
 <script>
-function sendRequest(){
-    const data = {
-        input: {
-            language: document.querySelector("#lang").value,
-            text: document.querySelector("#text").value
-        },
-        config: {}
-    }; 
+const today = document.querySelector('.today');
+const yesterday = document.querySelector('.yesterday');
+const last7days = document.querySelector('.last-7days');
+const last30days = document.querySelector('.last-30days');
 
-    fetch("http://192.168.112.130:8000/chain/stream_log",{
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data),
-    }).then(response => {
-        if (response.ok) {
-            const reader = response.body.getReader();
-            const decoder = new TextDecoder("utf-8");
-            const res = document.querySelector("#res");
+today.innerHTML = `
+    <div class="title">今天</div>
+    <div class="msg-item">The role of scientific data collection in regulatory processes is at stake.</div>
+    <div class="msg-item">The role of scientific .</div>
+    <div class="msg-item">The role of scientifiory processes is at stake.</div>
+`
 
-            function read() {
-                reader.read().then(({ done, value }) => {
-                    if (done) {
-                        console.log('Stream closed');
-                        return;
-                    }
+yesterday.innerHTML = `
+    <div class="title">昨天</div>
+    <div class="msg-item">The role of scientific data collection in regulatory processes is at stake.</div>
+    <div class="msg-item">The role of scientific .</div>
+    <div class="msg-item">The role of scientifiory processes is at stake.</div>
+`
 
-                    const chunk = decoder.decode(value, { stream: true });
-                    // console.log(1000,chunk.split('\r\n'))
-                    chunk.split('\r\n').forEach(eventString => {
-                        // console.log(1000,eventString);
-                        if (eventString && eventString.startsWith('data: ')) {
-                            // console.log(2000,eventString);
-                            const str = eventString.substring("data: ".length);
-                            const data = JSON.parse(str)
-                            // console.log(3000,data);
-                            data.ops.forEach(item => {
-                                if(item.op === "add" && item.path === "/logs/ChatZhipuAI/streamed_output_str/-"){
-                                    res.innerHTML += item.value;  
-                                }
-                            })
-                        }
-                    });
-                    
+last7days.innerHTML = `
+    <div class="title">最近7天</div>
+    <div class="msg-item">The role of scientific data collection in regulatory processes is at stake.</div>
+    <div class="msg-item">The role of scientific .</div>
+    <div class="msg-item">The role of scientifiory processes is at stake.</div>
+    <div class="msg-item">The role of scientific data collection in regulatory processes is at stake.</div>
+`
 
-                    read();
-                }).catch(error => {
-                    console.error('Stream error', error);
-                });
-            }
-
-            read();
-        } else {
-            console.error('Network response was not ok.');
-        }
-    }).catch(error => {
-        console.error('Fetch error:', error);
-    });    
-}
+last30days.innerHTML = `
+    <div class="title">最近30天</div>
+    <div class="msg-item">The role of scientific data collection in regulatory processes is at stake.</div>
+    <div class="msg-item">The role of scientific .</div>
+    <div class="msg-item">The role of scientifiory processes is at stake.</div>
+`
 </script>
