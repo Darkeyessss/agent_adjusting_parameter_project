@@ -10,7 +10,6 @@ from dotenv import load_dotenv,find_dotenv
 from chain_wrapper import tagging,tagging_pure
 from router_api import router
 
-
 # 1. Create prompt template
 system_template = "Translate the following into {language}:"
 prompt_template = ChatPromptTemplate.from_messages([
@@ -22,7 +21,8 @@ prompt_template = ChatPromptTemplate.from_messages([
 _ = load_dotenv(find_dotenv())
 
 # 3. Create model
-model = ChatZhipuAI(model="glm-4",temperature=0.5)
+#model = ChatZhipuAI(model="glm-4",temperature=0.5)
+model = ChatZhipuAI(model="glm-4", temperature=0.5, zhipuai_api_key="7d3ba48abe659b97c7b042c0e57623a9.1lltIQpQjBKCxPJ4")
 
 # 4.create parser
 parser = StrOutputParser()
